@@ -20,7 +20,6 @@ if not show_manuf_1k_ads:
 # Display the dataframe
 st.dataframe(df)
 
-
 st.header('Vehicle types by manufacturer')
 st.write(px.histogram(df, x='manufacturer', color='body_type'))
 
@@ -29,13 +28,13 @@ st.write(px.histogram(df, x='model_year', color='condition'))
 
 st.header('Compare price distribution between manufacturers')
 manufac_list = sorted(df['manufacturer'].unique())
-manufacturer_1 = st.selectbox('Select manufacturer 1', manufac_list, index=manufac_list.index('chevrolet'))
-manufacturer_2 = st.selectbox('Select manufacturer 2', manufac_list, index=manufac_list.index('hyundai'))
+manufacturer_1 = st.selectbox('Select manufacturer 1', manufac_list, index=manufac_list.index('chevrolet'), key='manufacturer_1')
+manufacturer_2 = st.selectbox('Select manufacturer 2', manufac_list, index=manufac_list.index('hyundai'), key='manufacturer_2')
 
 mask_filter = (df['manufacturer'] == manufacturer_1) | (df['manufacturer'] == manufacturer_2)
 df_filtered = df[mask_filter]
 
-normalize = st.checkbox('Normalize histogram', value=True)
+normalize = st.checkbox('Normalize histogram', value=True, key='normalize')
 histnorm = 'percent' if normalize else None
 st.write(px.histogram(df_filtered, x='price', nbins=30, color='manufacturer', histnorm=histnorm, barmode='overlay'))
 
@@ -44,7 +43,8 @@ st.header('Depreciation Rates of Price vs Mileage for All Manufacturers')
 
 # Dropdown menu to select manufacturer
 manufacturers = ['All'] + sorted(df['manufacturer'].unique())
-selected_manufacturer = st.selectbox('Select a Manufacturer', manufacturers)
+selected_manufacturer = st.selectbox('Select a Manufacturer', manufacturers, key='selected_manufacturer_scatter')
+
 
 # Filter the dataframe based on the selected manufacturer
 if selected_manufacturer != 'All':
