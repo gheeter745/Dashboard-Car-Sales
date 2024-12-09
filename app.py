@@ -14,6 +14,8 @@ manufacturer_column = df.pop('manufacturer')
 df.insert(2, 'manufacturer', manufacturer_column)
 # Renaming 'type' column to 'body type' for improved user friendliness
 df.rename(columns={'type': 'body_type'}, inplace=True)
+# Remove the manufacturer's name from the 'model' column
+df_vehicles['model'] = df_vehicles['model'].apply(lambda x: x.split(' ', 1)[1] if ' ' in x else x)
 
 # Streamlit header
 st.header('Data viewer')
@@ -22,6 +24,14 @@ st.header('Data viewer')
 show_manuf_1k_ads = st.checkbox('Include manufacturers with less than 1000 ads', key='show_manuf_1k_ads_1')
 if not show_manuf_1k_ads:
     df = df.groupby('manufacturer').filter(lambda x: len(x) > 1000)
+
+# Dropdown filters for each column except price
+columns_to_filter = ['model_year', 'manufacturer', 'model', 'condition', 'cylinders', 'fuel', 'odometer']
+for column in columns_to_filter:
+    unique_values = df[column].dropna().unique()
+    selected_value = st.selectbox(f'Filter by {column}', options=['All'] + list(unique_values), key=f'filter_{column}')
+    if selected_value != 'All':
+        df = df[df[column] == selected_value]
 
 # Display the dataframe
 st.dataframe(df)
