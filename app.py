@@ -53,7 +53,6 @@ else:
     filtered_df = df
 
 # Checkboxes to toggle scatter points and correlation lines
-show_scatter = st.checkbox('Show Scatter Points', value=True)
 show_trendline = st.checkbox('Show Correlation Line', value=True)
 
 # Determine trendline parameter based on checkbox
@@ -72,21 +71,39 @@ st.plotly_chart(fig)
 # Add text explanation below the scatter plot
 st.write("Steeper lines indicate faster depreciation rates.")
 
-# Add text explanation below the scatter plot
-st.write("Steeper lines indicate faster depreciation rates.")
+# Streamlit header for the histogram
+st.header('Average Listed Days by Model')
 
-# Streamlit header
-st.header('Average Listed Days by Model for All Manufacturers')
+# Dropdown menu to select manufacturer
+manufacturers = ['All'] + sorted(df['manufacturer'].unique())
+selected_manufacturer = st.selectbox('Select a Manufacturer', manufacturers)
 
-# Calculate average listed days by model
-average_listed_days = df.groupby('model')['days_listed'].mean().reset_index()
+# Radio button to select the sort order
+sort_order = st.radio('Sort Order', ['Alphabetical', 'Ascending by Average Listed Days'])
+
+# Filter the dataframe based on the selected manufacturer
+if selected_manufacturer != 'All':
+    filtered_df = df[df['manufacturer'] == selected_manufacturer]
+else:
+    filtered_df = df
+
+# Calculate average listed days by model for the filtered data
+average_listed_days = filtered_df.groupby('model')['days_listed'].mean().reset_index()
 average_listed_days.columns = ['model', 'average_listed_days']
 
-# Create the bar chart using Plotly Express
-fig = px.bar(average_listed_days, x='model', y='average_listed_days', color='model', 
-             title='Average Listed Days by Model for All Manufacturers',
-             labels={'model': 'Model', 'average_listed_days': 'Average Listed Days'},
-             color_discrete_sequence=px.colors.qualitative.Dark24)
+# Sort the data based on the selected sort order
+if sort_order == 'Alphabetical':
+    average_listed_days = average_listed_days.sort_values(by='model')
+else:
+    average_listed_days = average_listed_days.sort_values(by='average_listed_days', ascending=True)
 
-# Display the bar chart in Streamlit
+# Create the histogram using Plotly Express
+fig = px.histogram(average_listed_days, x='average_listed_days', y='model', color='model', 
+                   title=f'Average Listed Days by Model for {selected_manufacturer}' if selected_manufacturer != 'All' else 'Average Listed Days by Model for All Manufacturers',
+                   labels={'model': 'Model', 'average_listed_days': 'Average Listed Days'},
+                   color_discrete_sequence=px.colors.qualitative.Dark24,
+                   orientation='h')
+
+# Display the histogram in Streamlit
 st.plotly_chart(fig)
+
