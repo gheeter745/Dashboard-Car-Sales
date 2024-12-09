@@ -52,15 +52,25 @@ if selected_manufacturer != 'All':
 else:
     filtered_df = df
 
-# Create the scatter plot with a correlation line
+# Checkboxes to toggle scatter points and correlation lines
+show_scatter = st.checkbox('Show Scatter Points', value=True)
+show_trendline = st.checkbox('Show Correlation Line', value=True)
+
+# Determine trendline parameter based on checkbox
+trendline = "ols" if show_trendline else None
+
+# Create the scatter plot
 fig = px.scatter(filtered_df, x='odometer', y='price', color='model', 
                  title=f'Depreciation Rates of Price vs Mileage for {selected_manufacturer}' if selected_manufacturer != 'All' else 'Depreciation Rates of Price vs Mileage for All Manufacturers',
                  labels={'odometer': 'Odometer Reading (miles)', 'price': 'Price (USD)'}, 
                  hover_data=['model_year', 'condition'],
-                 trendline="ols")
+                 trendline=trendline)
 
 # Display the scatter plot
 st.plotly_chart(fig)
+
+# Add text explanation below the scatter plot
+st.write("Steeper lines indicate faster depreciation rates.")
 
 # Add text explanation below the scatter plot
 st.write("Steeper lines indicate faster depreciation rates.")
