@@ -76,10 +76,10 @@ st.header('Average Listed Days by Model')
 
 # Dropdown menu to select manufacturer
 manufacturers = ['All'] + sorted(df['manufacturer'].unique())
-selected_manufacturer = st.selectbox('Select a Manufacturer', manufacturers)
+selected_manufacturer = st.selectbox('Select a Manufacturer', manufacturers, key='selected_manufacturer')
 
 # Radio button to select the sort order
-sort_order = st.radio('Sort Order', ['Alphabetical', 'Ascending by Average Listed Days'])
+sort_order = st.radio('Sort Order', ['Alphabetical', 'Ascending by Average Listed Days'], key='sort_order')
 
 # Filter the dataframe based on the selected manufacturer
 if selected_manufacturer != 'All':
@@ -106,4 +106,3 @@ fig = px.histogram(average_listed_days, x='average_listed_days', y='model', colo
 
 # Display the histogram in Streamlit
 st.plotly_chart(fig)
-
