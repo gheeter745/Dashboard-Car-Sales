@@ -13,16 +13,7 @@ df['manufacturer'] = df['model'].apply(lambda x: x.split()[0])
 st.header('Data viewer')
 
 # Checkbox to include/exclude manufacturers with less than 1000 ads
-show_manuf_1k_ads = st.checkbox('Include manufacturers with less than 1000 ads', key='show_manuf_1k_ads')
-if not show_manuf_1k_ads:
-    df = df.groupby('manufacturer').filter(lambda x: len(x) > 1000)
-
-
-# Streamlit header
-st.header('Data viewer')
-
-# Checkbox to include/exclude manufacturers with less than 1000 ads
-show_manuf_1k_ads = st.checkbox('Include manufacturers with less than 1000 ads', key='show_manuf_1k_ads')
+show_manuf_1k_ads = st.checkbox('Include manufacturers with less than 1000 ads', key='show_manuf_1k_ads_1')
 if not show_manuf_1k_ads:
     df = df.groupby('manufacturer').filter(lambda x: len(x) > 1000)
 
