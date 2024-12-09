@@ -4,7 +4,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 
 # Load the dataset
-df = pd.read_csv('vehicles_us.csv')
+df_vehicles = pd.read_csv('vehicles_us.csv')
 
 #splitting 'model' to give a seperate column called 'manufacturer'
 df_vehicles['manufacturer'] = df_vehicles['model'].apply(lambda x:x.split()[0])
@@ -41,24 +41,24 @@ st.header('Data viewer')
 # Checkbox to include/exclude manufacturers with less than 1000 ads
 show_manuf_1k_ads = st.checkbox('Include manufacturers with less than 1000 ads', key='show_manuf_1k_ads')
 if not show_manuf_1k_ads:
-    df = df.groupby('manufacturer').filter(lambda x: len(x) > 1000)
+    df_vehicles = df_vehicles.groupby('manufacturer').filter(lambda x: len(x) > 1000)
 
 # Display the dataframe
-st.dataframe(df)
+st.dataframe(df_vehicles)
 
 
 st.header('Vehicle types by manufacturer')
-st.write(px.histogram(df, x='manufacturer', color='type'))
+st.write(px.histogram(df_vehicles, x='manufacturer', color='type'))
 
 st.header('Histogram of `condition` vs `model_year`')
-st.write(px.histogram(df, x='model_year', color='condition'))
+st.write(px.histogram(df_vehicles, x='model_year', color='condition'))
 
 st.header('Compare price distribution between manufacturers')
 manufac_list = sorted(df['manufacturer'].unique())
 manufacturer_1 = st.selectbox('Select manufacturer 1', manufac_list, index=manufac_list.index('chevrolet'))
 manufacturer_2 = st.selectbox('Select manufacturer 2', manufac_list, index=manufac_list.index('hyundai'))
 
-mask_filter = (df['manufacturer'] == manufacturer_1) | (df['manufacturer'] == manufacturer_2)
+mask_filter = (df_vehicles['manufacturer'] == manufacturer_1) | (df_vehicles['manufacturer'] == manufacturer_2)
 df_filtered = df[mask_filter]
 
 normalize = st.checkbox('Normalize histogram', value=True)
@@ -69,14 +69,14 @@ st.write(px.histogram(df_filtered, x='price', nbins=30, color='manufacturer', hi
 st.header('Depreciation Rates of Price vs Mileage for All Manufacturers')
 
 # Dropdown menu to select manufacturer
-manufacturers = ['All'] + sorted(df['manufacturer'].unique())
+manufacturers = ['All'] + sorted(df_vehicles['manufacturer'].unique())
 selected_manufacturer = st.selectbox('Select a Manufacturer', manufacturers)
 
 # Filter the dataframe based on the selected manufacturer
 if selected_manufacturer != 'All':
-    filtered_df = df[df['manufacturer'] == selected_manufacturer]
+    filtered_df = df_vehicles[df_vehicles['manufacturer'] == selected_manufacturer]
 else:
-    filtered_df = df
+    filtered_df = df_vehicles
 
 # Checkboxes to toggle scatter points and correlation lines
 show_trendline = st.checkbox('Show Correlation Line', value=True)
@@ -109,9 +109,9 @@ sort_order = st.radio('Sort Order', ['Alphabetical', 'Ascending by Average Liste
 
 # Filter the dataframe based on the selected manufacturer
 if selected_manufacturer != 'All':
-    filtered_df = df[df['manufacturer'] == selected_manufacturer]
+    filtered_df = df_vehicles[df_vehicles['manufacturer'] == selected_manufacturer]
 else:
-    filtered_df = df
+    filtered_df = df_vehicles
 
 # Calculate average listed days by model for the filtered data
 average_listed_days = filtered_df.groupby('model')['days_listed'].mean().reset_index()
