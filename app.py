@@ -62,6 +62,9 @@ fig = px.scatter(filtered_df, x='odometer', y='price', color='model',
 # Display the scatter plot
 st.plotly_chart(fig)
 
+# Add text explanation below the scatter plot
+st.write("Steeper lines indicate faster depreciation rates.")
+
 # Streamlit header
 st.header('Average Listed Days by Model for All Manufacturers')
 
