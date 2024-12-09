@@ -15,7 +15,7 @@ df.insert(2, 'manufacturer', manufacturer_column)
 # Renaming 'type' column to 'body type' for improved user friendliness
 df.rename(columns={'type': 'body_type'}, inplace=True)
 # Remove the manufacturer's name from the 'model' column
-df_vehicles['model'] = df_vehicles['model'].apply(lambda x: x.split(' ', 1)[1] if ' ' in x else x)
+df['model'] = df['model'].apply(lambda x: x.split(' ', 1)[1] if ' ' in x else x)
 
 # Streamlit header
 st.header('Data viewer')
