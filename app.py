@@ -6,8 +6,14 @@ import plotly.graph_objects as go
 # Load the dataset
 df = pd.read_csv('vehicles_us.csv')
 
-# Extract the manufacturer from the model
-df['manufacturer'] = df['model'].apply(lambda x: x.split()[0])
+#splitting 'model' to give a seperate column called 'manufacturer'
+df['manufacturer'] = df['model'].apply(lambda x:x.split()[0])
+# Remove the 'manufacturer' column and store it
+manufacturer_column = df.pop('manufacturer')
+# Insert the 'manufacturer' column at the second position (index 1)
+df.insert(2, 'manufacturer', manufacturer_column)
+# Renaming 'type' column to 'body type' for improved user friendliness
+df.rename(columns={'type': 'body_type'}, inplace=True)
 
 # Streamlit header
 st.header('Data viewer')
