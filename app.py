@@ -6,31 +6,16 @@ import plotly.graph_objects as go
 # Load the dataset
 df = pd.read_csv('vehicles_us.csv')
 
-#splitting 'model' to give a seperate column called 'manufacturer'
-df['manufacturer'] = df['model'].apply(lambda x:x.split()[0])
-# Remove the 'manufacturer' column and store it
-manufacturer_column = df.pop('manufacturer')
-# Insert the 'manufacturer' column at the second position (index 1)
-df.insert(2, 'manufacturer', manufacturer_column)
-# Renaming 'type' column to 'body type' for improved user friendliness
-df.rename(columns={'type': 'body_type'}, inplace=True)
+# Extract the manufacturer from the model
+df['manufacturer'] = df['model'].apply(lambda x: x.split()[0])
 
-# Remove the manufacturer's name from the 'model' column
-df['model'] = df['model'].apply(lambda x: x.split(' ', 1)[1] if ' ' in x else x)
+# Streamlit header
+st.header('Data viewer')
 
-numerical_to_fill = {
-    'price': 0,
-    'model_year': 0,
-    'cylinders': 0,
-    'odometer': 9000000,
-    'is_4wd': 0      
-}
-df.fillna(value=numerical_to_fill, inplace=True)
-
-text_to_fill = ['manufacturer', 'model', 'condition', 'fuel', 'transmission', 'body_type', 'paint_color']
-shared_fill_value = 'Unspecified'
-
-df[text_to_fill] = df[text_to_fill].fillna(shared_fill_value)
+# Checkbox to include/exclude manufacturers with less than 1000 ads
+show_manuf_1k_ads = st.checkbox('Include manufacturers with less than 1000 ads', key='show_manuf_1k_ads')
+if not show_manuf_1k_ads:
+    df = df.groupby('manufacturer').filter(lambda x: len(x) > 1000)
 
 
 # Streamlit header
@@ -46,7 +31,7 @@ st.dataframe(df)
 
 
 st.header('Vehicle types by manufacturer')
-st.write(px.histogram(df, x='manufacturer', color='type'))
+st.write(px.histogram(df, x='manufacturer', color='body_type'))
 
 st.header('Histogram of `condition` vs `model_year`')
 st.write(px.histogram(df, x='model_year', color='condition'))
