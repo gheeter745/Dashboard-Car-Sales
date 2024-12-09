@@ -43,8 +43,8 @@ st.write(px.histogram(df_filtered, x='price', nbins=30, color='manufacturer', hi
 st.header('Depreciation Rates of Price vs Mileage for All Manufacturers')
 
 # Dropdown menu to select manufacturer
-manufac_list = sorted(df['manufacturer'].unique())
-manufacturer_3 = st.selectbox('Select a Manufacturer', manufac_list, index=manufac_list.index())
+manufacturers = ['All'] + sorted(df['manufacturer'].unique())
+selected_manufacturer = st.selectbox('Select a Manufacturer', manufacturers)
 
 # Filter the dataframe based on the selected manufacturer
 if selected_manufacturer != 'All':
