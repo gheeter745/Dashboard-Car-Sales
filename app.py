@@ -20,8 +20,6 @@ if not show_manuf_1k_ads:
 # Display the dataframe
 st.dataframe(df)
 
-# Display the dataframe
-st.dataframe(df)
 
 st.header('Vehicle types by manufacturer')
 st.write(px.histogram(df, x='manufacturer', color='type'))
@@ -44,11 +42,22 @@ st.write(px.histogram(df_filtered, x='price', nbins=30, color='manufacturer', hi
 # Streamlit header for the scatter plot
 st.header('Depreciation Rates of Price vs Mileage for All Manufacturers')
 
-# Create the scatter plot
-fig = px.scatter(df, x='odometer', y='price', color='model', 
-                 title='Depreciation Rates of Price vs Mileage for All Manufacturers', 
+# Dropdown menu to select manufacturer
+manufac_list = sorted(df['manufacturer'].unique())
+manufacturer_3 = st.selectbox('Select a Manufacturer', manufac_list, index=manufac_list.index())
+
+# Filter the dataframe based on the selected manufacturer
+if selected_manufacturer != 'All':
+    filtered_df = df[df['manufacturer'] == selected_manufacturer]
+else:
+    filtered_df = df
+
+# Create the scatter plot with a correlation line
+fig = px.scatter(filtered_df, x='odometer', y='price', color='model', 
+                 title=f'Depreciation Rates of Price vs Mileage for {selected_manufacturer}' if selected_manufacturer != 'All' else 'Depreciation Rates of Price vs Mileage for All Manufacturers',
                  labels={'odometer': 'Odometer Reading (miles)', 'price': 'Price (USD)'}, 
-                 hover_data=['model_year', 'condition'])
+                 hover_data=['model_year', 'condition'],
+                 trendline="ols")
 
 # Display the scatter plot
 st.plotly_chart(fig)
