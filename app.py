@@ -6,8 +6,34 @@ import plotly.graph_objects as go
 # Load the dataset
 df = pd.read_csv('vehicles_us.csv')
 
-# Extract the manufacturer from the model
-df['manufacturer'] = df['model'].apply(lambda x: x.split()[0])
+#splitting 'model' to give a seperate column called 'manufacturer'
+df_vehicles['manufacturer'] = df_vehicles['model'].apply(lambda x:x.split()[0])
+# Remove the 'manufacturer' column and store it
+manufacturer_column = df_vehicles.pop('manufacturer')
+# Insert the 'manufacturer' column at the second position (index 1)
+df_vehicles.insert(2, 'manufacturer', manufacturer_column)
+# Renaming 'type' column to 'body type' for improved user friendliness
+df_vehicles.rename(columns={'type': 'body_type'}, inplace=True)
+
+# Remove the manufacturer's name from the 'model' column
+df_vehicles['model'] = df_vehicles['model'].apply(lambda x: x.split(' ', 1)[1] if ' ' in x else x)
+
+display(df_vehicles)
+# Fill missing values for columns with numerical value
+numerical_to_fill = {
+    'price': 0,
+    'model_year': 0,
+    'cylinders': 0,
+    'odometer': 9000000,
+    'is_4wd': 0      
+}
+df_vehicles.fillna(value=numerical_to_fill, inplace=True)
+
+text_to_fill = ['manufacturer', 'model', 'condition', 'fuel', 'transmission', 'body_type', 'paint_color']
+shared_fill_value = 'Unspecified'
+
+df_vehicles[text_to_fill] = df_vehicles[text_to_fill].fillna(shared_fill_value)
+
 
 # Streamlit header
 st.header('Data viewer')
