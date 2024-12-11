@@ -108,6 +108,9 @@ def fill_with_mean(group):
 # Group by 'model_year' (or 'model' + 'model_year') and apply the function
 df_vehicles['odometer'] = df_vehicles.groupby(['model', 'model_year'])['odometer'].transform(fill_with_mean)
 
+# Fill missing values in the 'paint_color' column with the word "Unspecified"
+df_vehicles['paint_color'].fillna('Unspecified', inplace=True)
+
 
 
 # Display the DataFrame to verify changes
@@ -164,24 +167,28 @@ if selected_manufacturer != 'All':
 else:
     filtered_df = df_vehicles
 
-# Checkboxes to toggle scatter points and correlation lines
-show_trendline = st.checkbox('Show Correlation Line', value=True, key='show_trendline')
+# Checkbox to toggle visibility of scatter plot
+show_scatter = st.checkbox('Show Scatter Plot', value=True, key='show_scatter')
 
-# Determine trendline parameter based on checkbox
-trendline = "ols" if show_trendline else None
+if show_scatter:
+    # Checkboxes to toggle scatter points and correlation lines
+    show_trendline = st.checkbox('Show Correlation Line', value=True, key='show_trendline')
 
-# Create the scatter plot
-fig = px.scatter(filtered_df, x='odometer', y='price_USD', color='model', 
-                 title=f'Depreciation Rates of Price vs Mileage for {selected_manufacturer}' if selected_manufacturer != 'All' else 'Depreciation Rates of Price vs Mileage for All Manufacturers',
-                 labels={'odometer': 'Odometer Reading (miles)', 'price_USD': 'Price (USD)'}, 
-                 hover_data=['model_year', 'condition'],
-                 trendline=trendline)
+    # Determine trendline parameter based on checkbox
+    trendline = "ols" if show_trendline else None
 
-# Display the scatter plot
-st.plotly_chart(fig)
+    # Create the scatter plot
+    fig = px.scatter(filtered_df, x='odometer', y='price_USD', color='model', 
+                     title=f'Depreciation Rates of Price vs Mileage for {selected_manufacturer}' if selected_manufacturer != 'All' else 'Depreciation Rates of Price vs Mileage for All Manufacturers',
+                     labels={'odometer': 'Odometer Reading (miles)', 'price_USD': 'Price (USD)'}, 
+                     hover_data=['model_year', 'condition'],
+                     trendline=trendline)
 
-# Add text explanation below the scatter plot
-st.write("Steeper lines indicate faster depreciation rates.")
+    # Display the scatter plot
+    st.plotly_chart(fig)
+
+    # Add text explanation below the scatter plot
+    st.write("Steeper lines indicate faster depreciation rates.")
 
 # Streamlit header for the histogram
 st.header('Average Listed Days by Model')
