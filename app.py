@@ -118,31 +118,15 @@ print(df_vehicles.head())
 st.header('Data viewer')
 
 # Checkbox to include/exclude manufacturers with less than 1000 ads
-show_manuf_1k_ads = st.checkbox('Include manufacturers with less than 1000 ads', key='show_manuf_1k_ads_1')
+show_manuf_1k_ads = st.checkbox('Include manufacturers with less than 1000 ads', key='show_manuf_1k_ads')
 if not show_manuf_1k_ads:
     df_vehicles = df_vehicles.groupby('manufacturer').filter(lambda x: len(x) > 1000)
 
 # Dropdown filters for each column except price
 columns_to_filter = ['model_year', 'manufacturer', 'model', 'condition', 'cylinders', 'fuel', 'odometer']
-for column in columns_to_filter:
+for i, column in enumerate(columns_to_filter):
     unique_values = df_vehicles[column].dropna().unique()
-    selected_value = st.selectbox(f'Filter by {column}', options=['All'] + list(unique_values), key=f'filter_{column}')
-    if selected_value != 'All':
-        df_vehicles = df_vehicles[df_vehicles[column] == selected_value]
-
-# Streamlit header
-st.header('Data viewer')
-
-# Checkbox to include/exclude manufacturers with less than 1000 ads
-show_manuf_1k_ads = st.checkbox('Include manufacturers with less than 1000 ads', key='show_manuf_1k_ads_1')
-if not show_manuf_1k_ads:
-    df_vehicles = df_vehicles.groupby('manufacturer').filter(lambda x: len(x) > 1000)
-
-# Dropdown filters for each column except price
-columns_to_filter = ['model_year', 'manufacturer', 'model', 'condition', 'cylinders', 'fuel', 'odometer']
-for column in columns_to_filter:
-    unique_values = df_vehicles[column].dropna().unique()
-    selected_value = st.selectbox(f'Filter by {column}', options=['All'] + list(unique_values), key=f'filter_{column}')
+    selected_value = st.selectbox(f'Filter by {column}', options=['All'] + list(unique_values), key=f'filter_{column}_{i}')
     if selected_value != 'All':
         df_vehicles = df_vehicles[df_vehicles[column] == selected_value]
 
@@ -174,7 +158,6 @@ st.header('Depreciation Rates of Price vs Mileage for All Manufacturers')
 manufacturers = ['All'] + sorted(df_vehicles['manufacturer'].unique())
 selected_manufacturer = st.selectbox('Select a Manufacturer', manufacturers, key='selected_manufacturer_scatter')
 
-
 # Filter the dataframe based on the selected manufacturer
 if selected_manufacturer != 'All':
     filtered_df = df_vehicles[df_vehicles['manufacturer'] == selected_manufacturer]
@@ -182,7 +165,7 @@ else:
     filtered_df = df_vehicles
 
 # Checkboxes to toggle scatter points and correlation lines
-show_trendline = st.checkbox('Show Correlation Line', value=True)
+show_trendline = st.checkbox('Show Correlation Line', value=True, key='show_trendline')
 
 # Determine trendline parameter based on checkbox
 trendline = "ols" if show_trendline else None
@@ -204,20 +187,19 @@ st.write("Steeper lines indicate faster depreciation rates.")
 st.header('Average Listed Days by Model')
 
 # Dropdown menu to select manufacturer
-manufacturers = ['All'] + sorted(df_vehicles['manufacturer'].unique())
-selected_manufacturer = st.selectbox('Select a Manufacturer', manufacturers, key='selected_manufacturer')
+selected_manufacturer_hist = st.selectbox('Select a Manufacturer', manufacturers, key='selected_manufacturer_hist')
 
 # Radio button to select the sort order
 sort_order = st.radio('Sort Order', ['Alphabetical', 'Ascending by Average Listed Days'], key='sort_order')
 
 # Filter the dataframe based on the selected manufacturer
-if selected_manufacturer != 'All':
-    filtered_df = df_vehicles[df_vehicles['manufacturer'] == selected_manufacturer]
+if selected_manufacturer_hist != 'All':
+    filtered_df_hist = df_vehicles[df_vehicles['manufacturer'] == selected_manufacturer_hist]
 else:
-    filtered_df = df_vehicles
+    filtered_df_hist = df_vehicles
 
 # Calculate average listed days by model for the filtered data
-average_listed_days = filtered_df.groupby('model')['days_listed'].mean().reset_index()
+average_listed_days = filtered_df_hist.groupby('model')['days_listed'].mean().reset_index()
 average_listed_days.columns = ['model', 'average_listed_days']
 
 # Sort the data based on the selected sort order
@@ -227,11 +209,11 @@ else:
     average_listed_days = average_listed_days.sort_values(by='average_listed_days', ascending=True)
 
 # Create the histogram using Plotly Express
-fig = px.histogram(average_listed_days, x='average_listed_days', y='model', color='model', 
-                   title=f'Average Listed Days by Model for {selected_manufacturer}' if selected_manufacturer != 'All' else 'Average Listed Days by Model for All Manufacturers',
-                   labels={'model': 'Model', 'average_listed_days': 'Average Listed Days'},
-                   color_discrete_sequence=px.colors.qualitative.Dark24,
-                   orientation='h')
+fig_hist = px.histogram(average_listed_days, x='average_listed_days', y='model', color='model', 
+                        title=f'Average Listed Days by Model for {selected_manufacturer_hist}' if selected_manufacturer_hist != 'All' else 'Average Listed Days by Model for All Manufacturers',
+                        labels={'model': 'Model', 'average_listed_days': 'Average Listed Days'},
+                        color_discrete_sequence=px.colors.qualitative.Dark24,
+                        orientation='h')
 
 # Display the histogram in Streamlit
-st.plotly_chart(fig)
+st.plotly_chart(fig_hist)
